@@ -1,0 +1,289 @@
+package com.goertek.factorytest.version;
+
+import com.goertek.factorytest.CommandExecution;
+import com.goertek.factorytest.FactoryMode;
+import com.goertek.factorytest.R;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.goertek.factorytest.ShellExe;
+import com.goertek.factorytest.Utils;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
+import com.yanzhenjie.permission.PermissionListener;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.System;
+import java.util.List;
+
+import android.os.SystemProperties;
+
+import static com.goertek.factorytest.CommandExecution.execCommand;
+
+public class version extends Activity {
+	private TextView mInfo;
+	private TextView textView001;
+	private SharedPreferences mSp;
+
+	private String TAG = "version";
+
+	private String mKernelVersion = "cat /proc/version";
+	private String mWlanMac = "cat /sys/class/net/wlan0/address";
+
+
+	public void VersionTest() {
+		String tempKernelVersion = "Linux version 4.4.78-gf28e1da18670 (android-build@wpiw11.hot.corp.google.com) (gcc version 4.9.x-google 20140827 (prerelease) (GCC) ) #1 SMP PREEMPT Tue Dec 12 19:23:29 UTC 2017";
+		StringBuilder localStringBuilder = new StringBuilder();
+		String display_id = SystemProperties.get("ro.build.display.id");
+		String value = SystemProperties.get("ro.build.date");
+		String imei = "imei:" + getIMEI(this) + "\n";
+		String baseBand = "baseBand:" + Build.getRadioVersion() + "\n";
+		String kernelVersion= "kernelVersion :";
+		String str = getKernelVersion("cat /proc/version") ;
+		if(str == ""){
+			Log.d(TAG,"version is null");
+			kernelVersion = kernelVersion + tempKernelVersion + "\n";
+		}else{
+			kernelVersion = kernelVersion + str + "\n";
+		}
+//		String kernelVersion= "kernelVersion :" + getKernelVersion() + "\n";
+//		if(Build.VERSION.SDK_INT > Build.VERSION_CODES.N){
+//			String SerialNo = "SerialNo:" + Build.SERIAL + "\n";
+//		}else {
+//			String SerialNo = "SerialNo:" + Build.getSerial() + "\n";
+//		}
+//		String CpuId = "CPU ID :" + Build.SUPPORTED_ABIS;
+		String cpuSN;
+		String bootState=null;
+		String signatureState=null;
+		if(FactoryMode.CurrentProduct== FactoryMode.Product_Name.vega_test){
+			cpuSN="cpu SN: "+readCpuSN();
+		}else {
+			cpuSN="cpu:"+Build.CPU_ABI;
+		}
+		bootState=SystemProperties.get("ro.boot.verifiedbootstate","unknown");
+		if(bootState.compareTo("orange")==0){
+			signatureState="signature state: disable";
+		}else if(bootState.compareTo("yellow")==0){
+			signatureState="signature state: enable";
+	    }else {
+			signatureState="signature state: "+bootState;
+		}
+		Log.e(TAG,"bootState="+bootState);
+
+		String info = "SerialNo:" + Build.SERIAL + "\n"+
+				"hardware :"+Build.HARDWARE +"\n"+
+				"release :" + Build.VERSION.RELEASE + "\n" +
+				"board :" + Build.BOARD +"\n"+
+				"device :" + Build.DEVICE +"\n"+
+				cpuSN+"\n"+
+				signatureState+"\n"+
+				"display :" + Build.DISPLAY +"\n"+
+				"host :" + Build.HOST +"\n"+
+				"ID :" + Build.ID +"\n"+
+				"Manufacturer :" + Build.MANUFACTURER +"\n"+
+				"model :" + Build.MODEL +"\n"+
+				"product :" + Build.PRODUCT +"\n"+
+				"tags" + Build.TAGS +"\n"+
+				"type :" + Build.TYPE +"\n"+
+				"user :" + Build.USER +"\n" +  //13 digits
+				"wlan :" + getWlanId(mWlanMac) + "\n" +
+				"Bluetooth :" + getBlueTooth()+ "\n";
+		value = value + "\n" + imei + baseBand + kernelVersion + info;
+		localStringBuilder.append(display_id).append("\n").append(value);// S006-SSD-P4-FM-ZH
+		mInfo.setText(localStringBuilder.toString());
+
+		String barCode = SystemProperties.get("gsm.serial");
+		if (!TextUtils.isEmpty(barCode)) {
+			textView001.setText(getResources().getString(R.string.version_barcode) + barCode);
+		} else {
+			textView001.setText(getResources().getString(R.string.version_barcode) + getResources().getString(R.string.version_cant));
+		}
+	}
+	String readCpuSN() {
+		String fileName ="/sys/kernel/dload/cpu_serial" ;
+		int length=10;
+		try {
+			FileInputStream fin = new FileInputStream(fileName);
+			byte[] buffer = new byte[length];
+			fin.read(buffer);
+			for(int i=0;i<length;i++){
+				Log.d("yxyx","i="+i+" c="+buffer[i]);
+			}
+			//buffer[length-1]=0;
+			String res2 = new String(buffer,"UTF-8");
+			Log.d("yxyx","s="+res2);
+			fin.close();
+			return res2;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	private String exeCmd(String cmd ){
+		String command = cmd;
+		String str = "";
+
+		try {
+			int ret = ShellExe.execCommand(command);
+			if(ret == 0){
+				str = ShellExe.getOutput();
+			}
+		}catch (IOException exception){
+			exception.printStackTrace();
+		}
+		Log.d(TAG,"exeCmd :"+cmd + "---return str :"+str);
+		return str;
+
+	}
+
+	public static String getIMEI(Context context) {
+		TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
+		String imei = telephonyManager.getDeviceId();
+
+		return imei;
+	}
+
+	private String getWlanId(){
+		WifiManager wm = (WifiManager)getSystemService(getApplicationContext().WIFI_SERVICE);
+		String m_szWLANMAC = wm.getConnectionInfo().getMacAddress();
+		return m_szWLANMAC;
+	}
+	private String getWlanId(String cmd){
+		CommandExecution.CommandResult commandResult;
+		commandResult = execCommand(cmd,false);
+//		if(commandResult.result != 0){
+//			return commandResult.errorMsg;
+//		}else{
+//			return commandResult.successMsg;
+//		}
+//		return exeCmd(cmd);
+		return commandResult.successMsg;
+	}
+
+	private String getBlueTooth(){
+		BluetoothAdapter m_BluetoothAdapter = null; // Local Bluetooth adapter
+		m_BluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		String m_szBTMAC = m_BluetoothAdapter.getAddress();
+		return m_szBTMAC;
+	}
+
+	private String getKernelVersion(String cmd){
+		String command = cmd;
+		String str = "";
+
+		try {
+			int ret = ShellExe.execCommand(command);
+			if(ret == 0){
+				str = ShellExe.getOutput();
+			}
+		}catch (IOException exception){
+			exception.printStackTrace();
+		}
+		Log.d(TAG,"getKernelVersion :"+cmd + "---return str :"+str);
+//		execCommand(cmd,true);
+		return str;
+	}
+
+	private String getKernelVersion() {
+		String kernelVersion = "";
+		InputStream inputStream = null;
+		try {
+			inputStream = new FileInputStream("/proc/version");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return kernelVersion;
+		}
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream), 8 * 1024);
+		String info = "";
+		String line = "";
+		try {
+			while ((line = bufferedReader.readLine()) != null) {
+				info += line;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				bufferedReader.close();
+				inputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		try {
+			if (info != "") {
+				final String keyword = "version ";
+				int index = info.indexOf(keyword);
+				line = info.substring(index + keyword.length());
+				index = line.indexOf(" ");
+				kernelVersion = line.substring(0, index);
+			}
+		} catch (IndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+
+		return kernelVersion;
+	}
+
+	public void button001(View view) {
+		finish();
+	}
+
+	public void onCreate(Bundle paramBundle) {
+		super.onCreate(paramBundle);
+		setContentView(R.layout.version);
+		SharedPreferences localSharedPreferences = getSharedPreferences("FactoryMode", 0);
+		this.mSp = localSharedPreferences;
+		TextView localTextView = (TextView) findViewById(R.id.version_info);
+		mInfo = localTextView;
+		textView001 = (TextView) findViewById(R.id.textview001_activity_version);
+
+		AndPermission.with(this)
+				.requestCode(100)
+				.permission(Permission.PHONE)
+//				.permission(Permission.STORAGE)
+				.callback(listener)
+				.start();
+		VersionTest();
+
+
+	}
+
+	private PermissionListener listener = new PermissionListener() {
+		@Override
+		public void onSucceed(int requestCode, List<String> grantedPermissions) {
+			// Successfully.
+			if(requestCode == 200) {
+				// TODO ...
+			}
+		}
+
+		@Override
+		public void onFailed(int requestCode, List<String> deniedPermissions) {
+			// Failure.
+			if(requestCode == 200) {
+				// TODO ...
+			}
+		}
+	};
+
+}

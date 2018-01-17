@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000" >
+
+    <com.goertek.factorytest.gsensor.tool.SpiritLevelView
+        android:id="@+id/spiritLevelView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/output"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:paddingTop="10dp" />
+
+    <TextView
+        android:id="@+id/output"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout_main"
+        android:layout_alignParentLeft="true"
+        android:isScrollContainer="true"
+        android:maxHeight="200dp"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_main"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="5dip" >
+
+        <Button
+            android:id="@+id/calibrate_zdown"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cali_down" 
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/calibrate_zup"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cali_up"
+            android:visibility="visible" />
+            
+        <Button
+            android:id="@+id/calibrate_exit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cali_exit"
+            android:visibility="visible" />
+    </LinearLayout>
+</RelativeLayout>

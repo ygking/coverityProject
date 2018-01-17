@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/wifi_test_info"
+        android:layout_width="fill_parent"
+        android:layout_height="400dip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/linearLayout1"
+        android:fadeScrollbars="false" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@id/wifi_state_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20.0dip" />
+
+            <TextView
+                android:id="@id/wifi_result_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15.0dip" />
+
+            <TextView
+                android:id="@id/wifi_con_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15.0dip" />
+
+            <TextView
+                android:id="@id/wifi_resinfo_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15.0dip" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+            android:id="@+id/wifi_test_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/wifi_test_info"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@id/wifi_bt_ok"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/Success"
+                android:textSize="25.0dip" />
+
+            <Button
+                android:id="@id/wifi_bt_failed"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/Failed"
+                android:textSize="25.0dip" />
+        </LinearLayout>
+
+
+</LinearLayout>

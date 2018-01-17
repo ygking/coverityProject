@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+    <Button
+        android:id="@+id/btn001_change_screen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="button001"
+        android:text="@string/change_screen_text"
+        android:textSize="30sp"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="bottom"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn001_activity_screen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/Success"
+            android:textSize="25.0dip" />
+
+        <Button
+            android:id="@+id/btn002_activity_screen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/Failed"
+            android:textSize="25.0dip" />
+    </LinearLayout>
+</LinearLayout>

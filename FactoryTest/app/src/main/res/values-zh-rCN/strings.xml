@@ -1,0 +1,13 @@
+<resources>
+    <string name="menu_settings">帮助</string>
+    <string name="title_activity_sensor">水平校准</string>
+    <string name="cali_success">重力传感器校准成功!</string>
+    <string name="cali_fail">重力传感器校准失败!</string>
+    <string name="waiting">等待...</string>
+    <string name="cali_prompt">校准中， 保持手机水平静止放置，屏幕朝上!</string>
+    <string name="operation_guide">帮助:\n \t\t把手机水平静止放置，屏幕朝上!\n \t\t点击 \"校准"按钮开始校准.\n</string>
+    <string name="cali_down">校准</string>
+    <string name="cali_up">校准</string>
+    <string name="cali_exit">退出</string>
+    <string name="chip_not_found">抱歉,当前使用的加速计不是 明皜提供的, 校准功能将被禁用!</string>    
+</resources>
